@@ -12,6 +12,7 @@ def list_segment(target, segment_length):
     """Build chunks of the size segment_length from list or tuple
 
     :param target: The list or tuple to be segmented
+    :param segment_length: the length of each segment being returned
     :return : Generator of segments
     """
     check_segment_length(segment_length)
@@ -26,7 +27,7 @@ def list_segment(target, segment_length):
     start = 0
     total = len(target)
     while start < total:
-        yield target[start:start+segment_length]
+        yield target[start:start + segment_length]
         start += segment_length
 
 
@@ -34,6 +35,7 @@ def dict_segment(target, segment_length):
     """Build chunks of the size segment_length from dict
 
     :param target: The dict to be segmented
+    :param segment_length: the length of each segment being returned
     :return : Generator of segmented subdicts.
     """
     check_segment_length(segment_length)
@@ -45,7 +47,7 @@ def dict_segment(target, segment_length):
             )
         )
 
-    for segment in list_segment(iter(target.items()), segment_length):
+    for segment in list_segment(list(target.items()), segment_length):
         yield dict(segment)
 
 
@@ -53,6 +55,7 @@ def file_segment(target, segment_length):
     """Build chunks of a file-like object
 
     :param target: The file-like obejct to be segmented
+    :param segment_length: the length of each segment being returned
     :return : Generators of slices
     """
     check_segment_length(segment_length)
@@ -74,12 +77,13 @@ def general_segment(target, segment_length):
     through the object
 
     :param target: The object to be segmented
+    :param segment_length: the length of each segment being returned
     :return : Generator of lists of chunks of target
     """
     check_segment_length(segment_length)
     segment = []
     for ele in target:
-        segment.append(segment)
+        segment.append(ele)
         if len(segment) >= segment_length:
             yield segment
             segment = []
@@ -90,8 +94,12 @@ def general_segment(target, segment_length):
 
 def safe_segment(target, segment_length):
     """Segment the target but will not raise Exception when target
-    is None or has a length 0. 
+    is None or has a length 0.
     If target is empty, then return one chunk contains [] or target.
+
+    :param target: the target object to be segmented
+    :param segment_length: the length of each segment being returned
+    :return: Corresponding segments based on type of the given object.
     """
     if target is None:
         return [[]]
